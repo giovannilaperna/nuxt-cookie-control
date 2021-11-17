@@ -119,6 +119,8 @@ modules: [
     //'bottom-left', 'bottom-right', 'bottom-full'
     barPosition: 'bottom-full',
 
+    dashInDescription: true,
+
     //default colors
     //if you want to disable colors set colors property to false
     colors: {

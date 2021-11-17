@@ -28,32 +28,34 @@
               <slot name="modal"/>
               <button @click="cookies.modal = false" class="cookieControl__ModalClose" v-text="cookies.text.close"/>
               <template v-for="type in ['necessary', 'optional']">
-                <h3 v-text="cookies.text[type]" :key="type.id"/>
-                <ul :key="type.id">
-                  <li v-for="cookie in cookies[type]" :key="cookie.id">
-                    <div class="cookieControl__ModalInputWrapper">
-                      <input v-if="type === 'necessary' && cookie.name !== 'functional'" :id="getCookieFirstName(cookie.name)" type="checkbox" disabled checked/>
-                      <input v-else :id="getCookieFirstName(cookie.name)" type="checkbox" :checked="cookies.enabledList.includes(cookie.identifier || cookies.slugify(getCookieFirstName(cookie.name))) || (cookies.get('cookie_control_consent').length === 0 && cookie.initialState === true)" @change="toogleCookie(cookie)"/>
-                      <label :for="getCookieFirstName(cookie.name)" v-html="getName(cookie.name)"/>
-                      <span class="cookieControl__ModalCookieName">
-                        {{ getName(cookie.name) }}
-                        <span v-if="cookie.description" v-html="getDescription(cookie.description)"/>
-                      </span>
-                    </div>
-                    <template v-if="cookie.cookies">
-                      <slot name="cookie" v-bind="{config: cookie}">
-                        <ul>
-                          <li v-for="item in cookie.cookies" :key="item.id" v-html="item"/>
-                        </ul>
-                      </slot>
-                    </template>
-                  </li>
-                </ul>
+                <template v-if="cookies[type] && cookies[type].length > 0">
+                  <h3 v-text="cookies.text[type]" :key="type.id"/>
+                  <ul :key="type.id">
+                    <li v-for="cookie in cookies[type]" :key="cookie.id">
+                      <div class="cookieControl__ModalInputWrapper">
+                        <input v-if="type === 'necessary' && cookie.name !== 'functional'" :id="getCookieFirstName(cookie.name)" type="checkbox" disabled checked/>
+                        <input v-else :id="getCookieFirstName(cookie.name)" type="checkbox" :checked="cookies.enabledList.includes(cookie.identifier || cookies.slugify(getCookieFirstName(cookie.name))) || (cookies.get('cookie_control_consent').length === 0 && cookie.initialState === true)" @change="toogleCookie(cookie)"/>
+                        <label :for="getCookieFirstName(cookie.name)" v-html="getName(cookie.name)"/>
+                        <span class="cookieControl__ModalCookieName">
+                          {{ getName(cookie.name) }}
+                          <span v-if="cookie.description" v-html="getDescription(cookie.description)"/>
+                        </span>
+                      </div>
+                      <template v-if="cookie.cookies">
+                        <slot name="cookie" v-bind="{config: cookie}">
+                          <ul>
+                            <li v-for="item in cookie.cookies" :key="item.id" v-html="item"/>
+                          </ul>
+                        </slot>
+                      </template>
+                    </li>
+                  </ul>
+                </template>
               </template>
               <div class="cookieControl__ModalButtons">
                 <button @click="setConsent({type: 'partial'})" v-text="cookies.text.save"/>
                 <button @click="setConsent" v-text="cookies.text.acceptAll"/>
-                <button @click="setConsent({declineAll: true})" v-text="cookies.text.declineAll"/>
+                <button @click="setConsent({declineAll: true, consent: false})" v-text="cookies.text.declineAll"/>
               </div>
             </div>
           </div>
@@ -156,7 +158,7 @@ export default {
         const module = await import('css-vars-ponyfill');
         let cssVars = module.default
         cssVars({variables})
-      } else if(process.client){
+      } else if(process.client && this.cookies.css){
         for(let cssVar in variables){
           document.documentElement.style.setProperty(`--${cssVar}`, variables[cssVar]);
         }
