@@ -12,7 +12,7 @@
             </div>
             <div class="cookieControl__BarButtons">
               <button @click="cookies.modal = true" v-text="cookies.text.manageCookies"/>
-              <button @click="setConsent({reload: false})" v-text="cookies.text.acceptAll"/>
+              <button @click="setConsent({reload: true})" v-text="cookies.text.acceptAll"/>
             </div>
           </div>
         </div>
